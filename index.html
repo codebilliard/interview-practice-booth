@@ -116,6 +116,9 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
       <button id="retryBtn" hidden>Retry camera</button>
       <span class="hint" id="camStatus"></span>
     </div>
+    <label for="set">Question set
+      <select id="set"><option value="intro" selected>Intro: the 5 general questions, in order</option><option value="values">Tamara values mix (shuffled)</option></select>
+    </label>
     <div class="grid">
       <label for="prep">Thinking time
         <select id="prep"><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option><option value="0">None (start when ready)</option></select>
@@ -128,6 +131,7 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
       </label>
       <label for="count">Questions
         <select id="count"><option value="5" selected>5 (realistic)</option><option value="8">8</option><option value="13">All 13</option></select>
+        <span class="hint">Used for the values mix</span>
       </label>
     </div>
     <label for="lang" style="max-width:260px">Transcript language
@@ -213,10 +217,17 @@ const BANK = [
   {q:"Where do you see yourself in five years?",v:"General"},
   {q:"If you could improve one thing in the Tamara app, what would it be?",v:"Curiosity"}
 ];
+const INTRO = [
+  {q:"Tell us about yourself.",v:"Intro"},
+  {q:"Why Tamara?",v:"Intro"},
+  {q:"Which team would you like to join, and why?",v:"Intro"},
+  {q:"You're doing a Master's. Why an internship now?",v:"Intro"},
+  {q:"What do you know about Tamara?",v:"Intro"}
+];
 const CRIT = ["Clear main point","Professional presentation","Enthusiasm and energy","Linked to the role or Tamara"];
 
 const $ = id => document.getElementById(id);
-$("bank").innerHTML = BANK.map(b=>`<li>${b.q} <span class="hint">· ${b.v}</span></li>`).join("");
+$("bank").innerHTML = INTRO.map((b,i)=>`<li><strong>Intro ${i+1}:</strong> ${b.q}</li>`).join("")+BANK.map(b=>`<li>${b.q} <span class="hint">· ${b.v}</span></li>`).join("");
 
 let stream=null, recorder=null, chunks=[], timer=null, facing="user", autoPicked=false;
 let queue=[], idx=0, takesLeft=0, cfg={}, results=[], currentUrl=null;
@@ -370,9 +381,10 @@ function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+":"+String(s%
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 $("startBtn").onclick=()=>{
-  cfg={prep:+$("prep").value,resp:$("resp").value,takes:+$("takes").value,count:+$("count").value,lang:$("lang").value};
+  cfg={prep:+$("prep").value,resp:$("resp").value,takes:+$("takes").value,count:+$("count").value,lang:$("lang").value,set:$("set").value};
   let qs;
-  if($("shuffle").checked){
+  if(cfg.set==="intro"){ qs=INTRO.slice(); }
+  else if($("shuffle").checked){
     const pick=v=>shuffle(BANK.filter(b=>b.v===v))[0];
     const core=[pick("Ownership"),pick("Resilience"),pick("Curiosity")];
     const rest=shuffle(BANK.filter(b=>!core.includes(b)));
