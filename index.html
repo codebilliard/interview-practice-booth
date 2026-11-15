@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tamara Practice Booth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f5f3fb; --surface:#ffffff; --ink:#1d1830; --muted:#6a6482; --line:#e2ddf0;
+  --accent:#6b2bd9; --accent-ink:#ffffff; --rec:#d6334a; --ok:#1f8a5b; --stage:#16121f;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#110e19; --surface:#1b1727; --ink:#eeeaf8; --muted:#a39cbb; --line:#2e2840;
+  --accent:#a77bff; --accent-ink:#140f20; --rec:#ff5c72; --ok:#4cc58c; --stage:#09070e; color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:700;font-size:1.6rem;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:.9rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+h2{font-family:var(--display);font-weight:500;font-size:1.35rem;line-height:1.3;margin:0;text-wrap:balance}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.stage{position:relative;background:var(--stage);border-radius:12px;aspect-ratio:16/9;max-width:100%;overflow:hidden;display:grid;place-items:center}
+.stage video{width:100%;height:100%;object-fit:cover}
+.mirror{transform:scaleX(-1)}
+.stage .nocam{color:#cfc8e4;text-align:center;padding:16px;font-size:.9rem;max-width:52ch}
+.stage .nocam strong{color:#fff}
+.badge{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.55);color:#fff;
+  font-family:var(--mono);font-size:.85rem;padding:6px 10px;border-radius:999px}
+.dot{width:10px;height:10px;border-radius:50%;background:#ff5c72;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.dot{animation:none}}
+.timer{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:2.4rem;line-height:1}
+.timerrow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;flex:1;min-width:120px}
+.bar i{display:block;height:100%;background:var(--accent);width:0}
+.bar.rec i{background:var(--rec)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+button{font:600 .95rem var(--body);border-radius:10px;padding:11px 18px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.rec{background:var(--rec);color:#fff;border-color:var(--rec)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+label{display:flex;flex-direction:column;gap:6px;font-size:.85rem;color:var(--muted);font-weight:500}
+select,input[type=number]{font:500 1rem var(--body);padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.check{flex-direction:row;align-items:center;gap:8px;color:var(--ink)}
+textarea{font:400 .95rem var(--body);width:100%;min-height:96px;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);resize:vertical}
+.hint{font-size:.85rem;color:var(--muted)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.steps span{width:28px;height:6px;border-radius:3px;background:var(--line)}
+.steps span.done{background:var(--ok)}.steps span.now{background:var(--accent)}
+ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:.92rem}
+.review{display:flex;flex-direction:column;gap:10px}
+.crit{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.answers{display:flex;flex-direction:column;gap:14px}
+.answers .a{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.answers video{width:100%;border-radius:10px;background:var(--stage);max-width:100%}
+.retakes{font-family:var(--mono);font-size:.85rem;color:var(--muted)}
+.tx{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.6;max-height:220px;overflow:auto}
+.tx .interim{color:var(--muted)}
+.tx mark{background:transparent;color:var(--rec);font-weight:600;text-decoration:underline dotted}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:var(--mono);font-size:.8rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink);font-variant-numeric:tabular-nums}
+.chip.good{border-color:var(--ok);color:var(--ok)}
+.chip.warn{border-color:var(--rec);color:var(--rec)}
+#copyArea{position:absolute;left:-9999px}
+#camStatus{font-family:var(--mono);font-size:.8rem}
+/* Phones: portrait camera frame, full-width tap targets, no iOS zoom on inputs */
+@media (max-width:600px){
+  body{padding-block:12px 32px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+  .card{padding:16px;gap:14px;border-radius:14px}
+  h1{font-size:1.35rem} h2{font-size:1.15rem}
+  .stage{aspect-ratio:3/4;max-height:46vh;margin-inline:auto;width:auto;max-width:100%}
+  #qcard #txBox{order:8} #qcard #thinkBox{order:9}
+  #phaseLabel{font-size:.68rem}
+  .timer{font-size:2rem}
+  .grid{grid-template-columns:1fr 1fr}
+  .btns{flex-direction:column;align-items:stretch}
+  .btns button{width:100%;min-height:48px}
+  #camRow label{min-width:0!important}
+  select,textarea,input{font-size:16px!important}
+  #notes{min-height:72px}
+  .tx{max-height:160px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Tamara Practice Booth</h1>
+    <span class="sub">One-way video interview rehearsal · Internship &amp; Co-op 2027</span>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup" class="card">
+    <span class="eyebrow">Before you start</span>
+    <h2>Rehearse the real flow: read the question, think, record, watch it back.</h2>
+    <p class="hint">Typical Tamara format: 5 questions in English, centred on Ownership, Resilience and Curiosity. 30 seconds to prepare, 1–2 minutes to answer. The defaults below match it.</p>
+    <div class="stage" id="setupStage"><div class="nocam" id="setupMsg">Starting your camera… If Chrome asks, click <strong>Allow</strong>.</div></div>
+    <div class="btns" id="camRow" hidden>
+      <label for="camSel" style="flex:1;min-width:200px">Camera
+        <select id="camSel"></select>
+      </label>
+      <button id="flipBtn">Switch front / back</button>
+    </div>
+    <div class="btns">
+      <button id="retryBtn" hidden>Retry camera</button>
+      <span class="hint" id="camStatus"></span>
+    </div>
+    <div class="grid">
+      <label for="prep">Thinking time
+        <select id="prep"><option value="30" selected>30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option><option value="0">None (start when ready)</option></select>
+      </label>
+      <label for="resp">Answer time
+        <select id="resp"><option value="mix" selected>1–2 minutes (like Tamara)</option><option value="60">1 minute</option><option value="90">1.5 minutes</option><option value="120">2 minutes</option></select>
+      </label>
+      <label for="takes">Retakes per question
+        <select id="takes"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="99">Unlimited</option></select>
+      </label>
+      <label for="count">Questions
+        <select id="count"><option value="5" selected>5 (realistic)</option><option value="8">8</option><option value="13">All 13</option></select>
+      </label>
+    </div>
+    <label for="lang" style="max-width:260px">Transcript language
+      <select id="lang"><option value="en-US" selected>English</option><option value="ar-SA">Arabic</option></select>
+    </label>
+    <label class="check" for="shuffle"><input type="checkbox" id="shuffle" checked> Mix questions like Tamara: at least one each on Ownership, Resilience and Curiosity, in random order</label>
+    <label class="check" for="practice"><input type="checkbox" id="practice" checked> Start with a warm-up question that doesn't count</label>
+    <div class="btns"><button class="primary" id="startBtn">Start practice</button></div>
+    <p class="hint">Videos stay in this browser tab only and are never saved. The live transcript uses Chrome's built-in speech recognition, which sends your audio to Google to turn it into text.</p>
+  </section>
+
+  <!-- QUESTION -->
+  <section id="qcard" class="card" hidden>
+    <div class="timerrow">
+      <span class="eyebrow" id="qnum">Question 1 of 5</span>
+      <div class="steps" id="steps"></div>
+    </div>
+    <h2 id="qtext"></h2>
+    <div class="stage" id="qStage">
+      <video id="live" class="mirror" autoplay muted playsinline></video>
+      <video id="playback" controls playsinline hidden></video>
+      <div class="nocam" id="qNoCam" hidden>No camera in this session. Use the timers here and record yourself with your phone at the same time.</div>
+      <div class="badge" id="recBadge" hidden><span class="dot"></span><span>REC</span></div>
+    </div>
+    <div class="timerrow">
+      <div>
+        <div class="eyebrow" id="phaseLabel">Thinking time</div>
+        <div class="timer" id="clock">0:30</div>
+      </div>
+      <div class="bar" id="bar"><i id="barFill"></i></div>
+    </div>
+    <div id="thinkBox">
+      <label for="notes">Your 3 bullets: Point → Proof → Link
+        <textarea id="notes" placeholder="Point: …&#10;Proof: …&#10;Link to Tamara: …"></textarea>
+      </label>
+    </div>
+    <div class="review" id="txBox" hidden>
+      <span class="eyebrow" id="txLabel">Live transcript</span>
+      <div class="tx" id="liveTx"></div>
+      <div class="stats" id="liveStats"></div>
+    </div>
+    <div class="btns" id="actions"></div>
+    <span class="retakes" id="retakes"></span>
+  </section>
+
+  <!-- DONE -->
+  <section id="done" class="card" hidden>
+    <span class="eyebrow">Session complete</span>
+    <h2>Watch your answers back and score each one honestly.</h2>
+    <p class="hint">Tick what each answer hit:</p>
+    <ul class="qs">
+      <li><strong>Clear main point:</strong> one idea first, then 2–3 supporting points</li>
+      <li><strong>Professional presentation:</strong> lighting, background, clothes, eye contact with the lens</li>
+      <li><strong>Enthusiasm and energy:</strong> smile, lively voice, sounds like you want this</li>
+      <li><strong>Linked to the role or Tamara:</strong> connects your experience to the team you want</li>
+    </ul>
+    <div class="answers" id="answers"></div>
+    <div class="btns"><button id="copyBtn">Copy all transcripts for Claude</button><button class="primary" id="againBtn">Practice again</button></div>
+    <span class="hint" id="copyMsg"></span>
+    <textarea id="copyArea" aria-hidden="true" tabindex="-1"></textarea>
+  </section>
+
+  <section class="card">
+    <span class="eyebrow">Question bank</span>
+    <ul class="qs" id="bank"></ul>
+  </section>
+</div>
+
+<script>
+const WARMUP = "Warm-up: Tell us about something you enjoyed doing last weekend.";
+const BANK = [
+  {q:"Tell us about a time you took ownership of a problem that wasn't strictly your responsibility.",v:"Ownership"},
+  {q:"Describe a time you had to make a decision without having all the information. What did you do?",v:"Ownership"},
+  {q:"Tell us about a project where you were responsible for the result. How did you make sure it succeeded?",v:"Ownership"},
+  {q:"Tell us about a setback or failure, and what you learned from it.",v:"Resilience"},
+  {q:"Describe a time you had to keep going under pressure, or when plans suddenly changed.",v:"Resilience"},
+  {q:"Tell us about feedback that was hard to hear. What did you do with it?",v:"Resilience"},
+  {q:"Tell us about a time you had to learn something new quickly.",v:"Curiosity"},
+  {q:"Describe a time you asked 'what if?' and tried a new way of doing something.",v:"Curiosity"},
+  {q:"What's something you've been curious about recently, and how did you explore it?",v:"Curiosity"},
+  {q:"Tell us about yourself.",v:"General"},
+  {q:"Why do you want to join Tamara?",v:"General"},
+  {q:"Where do you see yourself in five years?",v:"General"},
+  {q:"If you could improve one thing in the Tamara app, what would it be?",v:"Curiosity"}
+];
+const CRIT = ["Clear main point","Professional presentation","Enthusiasm and energy","Linked to the role or Tamara"];
+
+const $ = id => document.getElementById(id);
+$("bank").innerHTML = BANK.map(b=>`<li>${b.q} <span class="hint">· ${b.v}</span></li>`).join("");
+
+let stream=null, recorder=null, chunks=[], timer=null, facing="user", autoPicked=false;
+let queue=[], idx=0, takesLeft=0, cfg={}, results=[], currentUrl=null;
+
+/* ---------- speech-to-text ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let sr=null, srOn=false, finalTx="", interimTx="", recStart=0, currentTx="", currentSecs=0;
+const FILLERS=["um","uh","er","erm","like","you know","basically","actually","kind of","sort of","i mean","literally"];
+const KEYWORDS=["tamara","customer","user","owner","ownership","curious","curiosity","learn","resilien","excited","exciting","team","impact","fintech"];
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fillerRe=new RegExp("\\b("+FILLERS.map(f=>f.replace(/ /g,"\\s+")).join("|")+")\\b","gi");
+function highlight(t){return esc(t).replace(fillerRe,"<mark>$1</mark>")}
+function analyse(text,secs){
+  const words=(text.match(/\S+/g)||[]).length;
+  const wpm=secs>3?Math.round(words/(secs/60)):0;
+  const fillers=(text.match(fillerRe)||[]).length;
+  const low=text.toLowerCase();
+  const hits=[...new Set(KEYWORDS.filter(k=>low.includes(k)))];
+  return {words,wpm,fillers,hits,secs:Math.round(secs)};
+}
+function statChips(a){
+  const pace=a.wpm===0?"":a.wpm<110?"warn":a.wpm>170?"warn":"good";
+  const paceTxt=a.wpm===0?"–":a.wpm+" wpm"+(a.wpm<110?" · a bit slow":a.wpm>170?" · too fast":" · good pace");
+  return `<span class="chip">${Math.floor(a.secs/60)}:${String(a.secs%60).padStart(2,"0")} long</span>`+
+    `<span class="chip">${a.words} words</span>`+
+    `<span class="chip ${pace}">${paceTxt}</span>`+
+    `<span class="chip ${a.fillers>3?"warn":"good"}">${a.fillers} filler word${a.fillers===1?"":"s"}</span>`+
+    `<span class="chip ${a.hits.length?"good":"warn"}">${a.hits.length?"Key words: "+a.hits.join(", "):"No Tamara or value words"}</span>`;
+}
+function renderLiveTx(){
+  $("liveTx").innerHTML=((finalTx?highlight(finalTx):"")+(interimTx?` <span class="interim">${esc(interimTx)}</span>`:""))||'<span class="interim">Start speaking…</span>';
+  $("liveTx").scrollTop=$("liveTx").scrollHeight;
+}
+function startSpeech(){
+  finalTx=""; interimTx="";
+  if(!SR){ $("txBox").hidden=false; $("liveTx").innerHTML='<span class="interim">Live transcript needs Google Chrome on a laptop.</span>'; $("liveStats").innerHTML=""; return; }
+  $("txBox").hidden=false; $("txLabel").textContent="Live transcript"; $("liveStats").innerHTML=""; renderLiveTx();
+  try{
+    sr=new SR(); sr.lang=cfg.lang; sr.continuous=true; sr.interimResults=true;
+    sr.onresult=e=>{
+      interimTx="";
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const t=e.results[i][0].transcript;
+        if(e.results[i].isFinal) finalTx+=(finalTx?" ":"")+t.trim(); else interimTx+=t;
+      }
+      renderLiveTx();
+    };
+    sr.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"){srOn=false;$("liveTx").innerHTML='<span class="interim">Chrome blocked speech recognition. Allow the microphone for this page and try again.</span>';} };
+    sr.onend=()=>{ if(srOn){ try{sr.start()}catch(_){} } };
+    srOn=true; sr.start();
+  }catch(e){ srOn=false; }
+}
+function stopSpeech(){ srOn=false; if(sr){ try{sr.stop()}catch(_){} } }
+
+/* ---------- camera (robust) ---------- */
+const BACK_RE=/back|rear|environment|world/i;
+const FRONT_RE=/front|user|facetime|integrated|built-in|webcam|hd camera|truevision/i;
+const inFrame=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+
+function camError(e){
+  const n=e&&e.name||String(e||"");
+  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)
+    return "This browser view can't use the camera. <strong>Open this file in Google Chrome</strong> on your laptop (right-click the file → Open with → Google Chrome).";
+  if(n==="NotAllowedError"||n==="SecurityError")
+    return inFrame
+      ? "The camera is blocked inside this preview (claude.ai blocks cameras). <strong>Open the downloaded practice-booth.html in Google Chrome</strong> instead."
+      : "Camera permission is blocked. Click the <strong>camera icon at the right of the address bar</strong> → choose <strong>Allow</strong> → then press <strong>Retry camera</strong>.";
+  if(n==="NotReadableError"||n==="TrackStartError"||n==="AbortError")
+    return "Another app is using the camera. <strong>Close Zoom, Teams, WhatsApp, the Camera app or other Chrome tabs</strong> using it, then press <strong>Retry camera</strong>.";
+  if(n==="NotFoundError"||n==="DevicesNotFoundError")
+    return "No camera was found. Check it's plugged in or switched on (some laptops have a camera key or privacy shutter), then press <strong>Retry camera</strong>.";
+  return "The camera didn't start ("+esc(n||"unknown error")+"). Press <strong>Retry camera</strong>, or reload the page.";
+}
+
+async function getStream(deviceId){
+  const base = deviceId ? {deviceId:{exact:deviceId}} : {facingMode:{ideal:facing}};
+  const phone = matchMedia("(max-width:600px)").matches;
+  const size = phone ? {width:{ideal:720},height:{ideal:960}} : {width:{ideal:1280},height:{ideal:720}};
+  const tries=[
+    {video:{...base,...size},audio:true},
+    {video:base,audio:true},
+    {video:base,audio:false},
+    {video:true,audio:true},
+    {video:true,audio:false}
+  ];
+  let err;
+  for(const c of tries){
+    try{ const s=await navigator.mediaDevices.getUserMedia(c); s.__noMic=!c.audio; return s; }
+    catch(e){ err=e; if(e.name==="NotReadableError"&&deviceId) break; }
+  }
+  throw err;
+}
+
+function showStream(){
+  const v=document.createElement("video");
+  v.autoplay=true; v.muted=true; v.playsInline=true; v.className="mirror"; v.srcObject=stream;
+  $("setupStage").innerHTML=""; $("setupStage").appendChild(v);
+  v.play?.().catch(()=>{});
+  $("live").srcObject=stream; $("live").play?.().catch(()=>{});
+  const t=stream.getVideoTracks()[0];
+  $("camStatus").textContent="Using: "+(t?.label||"camera")+(stream.__noMic?" · no microphone (video only)":"");
+  $("retryBtn").hidden=false; $("retryBtn").textContent="Restart camera";
+}
+
+async function initCam(deviceId){
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  $("setupStage").innerHTML='<div class="nocam" id="setupMsg">Starting your camera… If Chrome asks, click <strong>Allow</strong>.</div>';
+  $("camStatus").textContent="";
+  try{
+    if(!navigator.mediaDevices?.getUserMedia) throw {name:"NoMediaDevices"};
+    stream = await getStream(deviceId);
+    const cams = await listCams();
+    // Auto-pick the front camera once, if we landed on a back camera
+    if(!deviceId && !autoPicked && facing==="user"){
+      autoPicked=true;
+      const cur=stream.getVideoTracks()[0]?.label||"";
+      const front=cams.find(c=>FRONT_RE.test(c.label)&&!BACK_RE.test(c.label));
+      if(BACK_RE.test(cur) && front){ return initCam(front.deviceId); }
+    }
+    showStream();
+  }catch(e){
+    stream=null;
+    $("setupStage").innerHTML='<div class="nocam" id="setupMsg"></div>';
+    $("setupMsg").innerHTML=camError(e)+'<br><br><span style="opacity:.75">The questions and timers still work without a camera.</span>';
+    $("retryBtn").hidden=false; $("retryBtn").textContent="Retry camera";
+    $("camStatus").textContent=e&&e.name?("Error: "+e.name):"";
+    try{ await listCams(); }catch(_){}
+  }
+}
+async function listCams(){
+  let cams=[];
+  try{
+    cams=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==="videoinput");
+    const cur=stream?.getVideoTracks()[0]?.getSettings().deviceId;
+    $("camSel").innerHTML=cams.map((c,i)=>`<option value="${c.deviceId}" ${c.deviceId===cur?"selected":""}>${esc(c.label||"Camera "+(i+1))}</option>`).join("");
+    $("camRow").hidden=cams.length<2;
+  }catch(e){}
+  return cams;
+}
+$("camSel").onchange=e=>initCam(e.target.value);
+$("flipBtn").onclick=()=>{
+  facing=facing==="user"?"environment":"user";
+  const opts=[...$("camSel").options]; const cur=$("camSel").selectedIndex;
+  if(opts.length>1){ initCam(opts[(cur+1)%opts.length].value); } else initCam();
+};
+$("retryBtn").onclick=()=>initCam($("camRow").hidden?undefined:$("camSel").value||undefined);
+navigator.mediaDevices?.addEventListener?.("devicechange",()=>listCams());
+initCam();
+
+function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+$("startBtn").onclick=()=>{
+  cfg={prep:+$("prep").value,resp:$("resp").value,takes:+$("takes").value,count:+$("count").value,lang:$("lang").value};
+  let qs;
+  if($("shuffle").checked){
+    const pick=v=>shuffle(BANK.filter(b=>b.v===v))[0];
+    const core=[pick("Ownership"),pick("Resilience"),pick("Curiosity")];
+    const rest=shuffle(BANK.filter(b=>!core.includes(b)));
+    qs=shuffle(core.concat(rest.slice(0,Math.max(0,cfg.count-3))));
+  } else qs=BANK.slice(0,cfg.count);
+  queue = ($("practice").checked?[{q:WARMUP,warm:true}]:[]).concat(qs.map(b=>({q:b.q,v:b.v})));
+  queue.forEach(it=>{it.time = cfg.resp==="mix" ? (Math.random()<.5?60:120) : +cfg.resp;});
+  idx=0; results=[];
+  $("setup").hidden=true; $("done").hidden=true; $("qcard").hidden=false;
+  loadQuestion();
+};
+
+function renderSteps(){
+  $("steps").innerHTML=queue.map((_,i)=>`<span class="${i<idx?'done':i===idx?'now':''}"></span>`).join("");
+}
+function loadQuestion(){
+  const item=queue[idx]; takesLeft=cfg.takes;
+  const real=queue.filter(x=>!x.warm), n=real.indexOf(item)+1;
+  $("qnum").textContent = item.warm ? "Warm-up (not counted)" : `Question ${n} of ${real.length}`;
+  $("qtext").textContent=item.q; $("notes").value="";
+  renderSteps(); startThinking();
+}
+function showLive(){
+  $("playback").hidden=true; $("playback").pause?.();
+  $("live").hidden=!stream; $("qNoCam").hidden=!!stream;
+  if(stream){ $("live").srcObject=stream; $("live").play?.().catch(()=>{}); }
+}
+function countdown(secs, onEnd, rec){
+  clearInterval(timer);
+  const end=Date.now()+secs*1000;
+  $("bar").classList.toggle("rec",!!rec);
+  const tick=()=>{
+    const left=(end-Date.now())/1000;
+    $("clock").textContent=fmt(left);
+    $("barFill").style.width=Math.min(100,(1-left/secs)*100)+"%";
+    if(left<=0){clearInterval(timer);onEnd();}
+  };
+  tick(); timer=setInterval(tick,200);
+}
+function setActions(list){
+  $("actions").innerHTML="";
+  list.forEach(([label,cls,fn,dis])=>{const b=document.createElement("button");b.textContent=label;if(cls)b.className=cls;b.disabled=!!dis;b.onclick=fn;$("actions").appendChild(b)});
+}
+function showTakes(){ $("retakes").textContent = cfg.takes===99 ? "Unlimited retakes" : `Retakes left: ${takesLeft}`; }
+
+function startThinking(){
+  showLive(); $("thinkBox").hidden=false; $("recBadge").hidden=true; $("txBox").hidden=true; showTakes();
+  if(cfg.prep===0){
+    $("phaseLabel").textContent="Ready when you are"; $("clock").textContent="–"; $("barFill").style.width="0";
+    clearInterval(timer);
+    setActions([["Record now","rec",startRecording]]);
+    return;
+  }
+  const t=queue[idx].time;
+  $("phaseLabel").textContent=`Thinking time · you'll have ${t>=120?"2 minutes":t===60?"1 minute":fmt(t)} to answer · recording starts automatically`;
+  setActions([["Start recording early","rec",startRecording]]);
+  countdown(cfg.prep,startRecording);
+}
+function startRecording(){
+  clearInterval(timer); showLive(); $("thinkBox").hidden=true;
+  $("phaseLabel").textContent="Recording · answer time left";
+  $("recBadge").hidden=false; chunks=[]; recStart=Date.now(); startSpeech();
+  if(stream && window.MediaRecorder){
+    const types=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm","video/mp4"];
+    const mt=types.find(t=>MediaRecorder.isTypeSupported?.(t));
+    try{
+      recorder=new MediaRecorder(stream, mt?{mimeType:mt}:undefined);
+      recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+      recorder.onstop=finishTake;
+      recorder.start(1000);
+    }catch(e){recorder=null}
+  } else recorder=null;
+  setActions([["Stop recording","primary",stopRecording]]);
+  countdown(queue[idx].time,stopRecording,true);
+}
+function stopRecording(){
+  clearInterval(timer); $("recBadge").hidden=true;
+  currentSecs=(Date.now()-recStart)/1000; stopSpeech();
+  if(recorder && recorder.state!=="inactive") recorder.stop(); else finishTake();
+}
+function finishTake(){
+  if(currentUrl) URL.revokeObjectURL(currentUrl);
+  currentUrl = chunks.length ? URL.createObjectURL(new Blob(chunks,{type:chunks[0].type||"video/webm"})) : null;
+  $("phaseLabel").textContent="Review your answer"; $("clock").textContent="✓"; $("barFill").style.width="100%";
+  setTimeout(()=>{
+    currentTx=(finalTx+" "+interimTx).trim();
+    if(SR){
+      $("txLabel").textContent="Transcript";
+      $("liveTx").innerHTML=currentTx?highlight(currentTx):'<span class="interim">No speech was picked up. Check your microphone.</span>';
+      $("liveStats").innerHTML=currentTx?statChips(analyse(currentTx,currentSecs)):"";
+    }
+  },700);
+  if(currentUrl){ $("live").hidden=true; $("playback").hidden=false; $("playback").src=currentUrl; $("qNoCam").hidden=true; }
+  const canRetake = cfg.takes===99 || takesLeft>0;
+  const last = idx===queue.length-1;
+  setActions([
+    [last?"Use this answer and finish":"Use this answer · next question","primary",acceptTake],
+    ["Re-record","",()=>{if(cfg.takes!==99)takesLeft--;startThinking()},!canRetake]
+  ]);
+  showTakes();
+}
+function acceptTake(){
+  const item=queue[idx];
+  if(!item.warm) results.push({q:item.q,url:currentUrl,tx:currentTx,secs:currentSecs});
+  else if(currentUrl) URL.revokeObjectURL(currentUrl);
+  currentUrl=null; idx++;
+  if(idx<queue.length) loadQuestion(); else finish();
+}
+function finish(){
+  clearInterval(timer); $("qcard").hidden=true; $("done").hidden=false;
+  $("answers").innerHTML=results.length?"":'<p class="hint">No answers were saved this round. After each recording, click <strong>Use this answer</strong> to keep it. The warm-up question is never saved.</p>';
+  results.forEach((r,i)=>{
+    const d=document.createElement("div"); d.className="a";
+    d.innerHTML=`<strong>${i+1}. ${esc(r.q)}</strong>`+(r.url?`<video controls playsinline src="${r.url}"></video>`:`<span class="hint">No in-page recording.</span>`)+
+      (r.tx?`<div class="tx">${highlight(r.tx)}</div><div class="stats">${statChips(analyse(r.tx,r.secs))}</div>`:"")+
+      `<div class="crit">${CRIT.map((c,k)=>`<label class="check" for="c${i}_${k}"><input type="checkbox" id="c${i}_${k}"> ${c}</label>`).join("")}</div>`;
+    $("answers").appendChild(d);
+  });
+}
+$("copyBtn").onclick=()=>{
+  const text="Please review my Tamara video interview practice answers. For each: what worked, what to improve, and a stronger version.\n\n"+
+    results.map((r,i)=>{const a=analyse(r.tx||"",r.secs);return `Q${i+1}. ${r.q}\nLength: ${a.secs}s · ${a.words} words · ${a.wpm} wpm · ${a.fillers} fillers\nAnswer: ${r.tx||"(no transcript)"}`}).join("\n\n");
+  const ok=()=>{$("copyMsg").textContent="Copied. Paste it into your chat with Claude."};
+  const fallback=()=>{const t=$("copyArea");t.value=text;t.select();try{document.execCommand("copy");ok()}catch(e){$("copyMsg").textContent="Copy didn't work. Select the transcripts and copy them by hand."}};
+  if(navigator.clipboard?.writeText) navigator.clipboard.writeText(text).then(ok,fallback); else fallback();
+};
+$("againBtn").onclick=()=>{
+  results.forEach(r=>r.url&&URL.revokeObjectURL(r.url));
+  $("done").hidden=true; $("setup").hidden=false; window.scrollTo(0,0);
+};
+</script>
+</body>
+</html>
