@@ -117,7 +117,7 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
       <span class="hint" id="camStatus"></span>
     </div>
     <label for="set">Question set
-      <select id="set"><option value="intro" selected>Tamara: your 5 likely questions, in order</option><option value="values">Tamara values mix (shuffled)</option></select>
+      <select id="set"><option value="intro" selected>Tamara: your 5 likely questions, in order</option></select>
     </label>
     <div class="grid">
       <label for="prep">Thinking time
@@ -129,7 +129,7 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
       <label for="takes">Retakes per question
         <select id="takes"><option value="0">0</option><option value="1" selected>1</option><option value="2">2</option><option value="99">Unlimited</option></select>
       </label>
-      <label for="count">Questions
+      <label for="count" hidden>Questions
         <select id="count"><option value="5" selected>5 (realistic)</option><option value="8">8</option><option value="13">All 13</option></select>
         <span class="hint">Used for the values mix</span>
       </label>
@@ -137,7 +137,7 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
     <label for="lang" style="max-width:260px">Transcript language
       <select id="lang"><option value="en-US" selected>English</option><option value="ar-SA">Arabic</option></select>
     </label>
-    <label class="check" for="shuffle"><input type="checkbox" id="shuffle" checked> Mix questions like Tamara: at least one each on Ownership, Resilience and Curiosity, in random order</label>
+    <label class="check" for="shuffle" hidden><input type="checkbox" id="shuffle" checked> Mix questions like Tamara: at least one each on Ownership, Resilience and Curiosity, in random order</label>
     <label class="check" for="practice"><input type="checkbox" id="practice" checked> Start with a warm-up question that doesn't count</label>
     <div class="btns"><button class="primary" id="startBtn">Start practice</button></div>
     <p class="hint">Videos stay in this browser tab only and are never saved. The live transcript uses Chrome's built-in speech recognition, which sends your audio to Google to turn it into text.</p>
@@ -195,7 +195,7 @@ ul.qs{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;colo
   </section>
 
   <section class="card">
-    <span class="eyebrow">Question bank</span>
+    <span class="eyebrow">Your 5 questions</span>
     <ul class="qs" id="bank"></ul>
   </section>
 </div>
@@ -221,13 +221,13 @@ const INTRO = [
   {q:"Tell us about yourself.",v:"Intro"},
   {q:"Tell us about a time you took ownership of something.",v:"Intro"},
   {q:"Tell us about a failure or setback.",v:"Intro"},
-  {q:"Which team would you like to join, and why?",v:"Intro"},
-  {q:"Tell us about a time you had to learn something new quickly.",v:"Intro"}
+  {q:"Tell us about a time you had to learn something new quickly.",v:"Intro"},
+  {q:"Which team would you like to join, and why?",v:"Intro"}
 ];
 const CRIT = ["Clear main point","Professional presentation","Enthusiasm and energy","Linked to the role or Tamara"];
 
 const $ = id => document.getElementById(id);
-$("bank").innerHTML = INTRO.map((b,i)=>`<li><strong>Tamara ${i+1}:</strong> ${b.q}</li>`).join("")+BANK.map(b=>`<li>${b.q} <span class="hint">· ${b.v}</span></li>`).join("");
+$("bank").innerHTML = INTRO.map((b,i)=>`<li><strong>Tamara ${i+1}:</strong> ${b.q}</li>`).join("");
 
 let stream=null, recorder=null, chunks=[], timer=null, facing="user", autoPicked=false;
 let queue=[], idx=0, takesLeft=0, cfg={}, results=[], currentUrl=null;
